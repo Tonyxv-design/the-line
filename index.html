@@ -85,6 +85,23 @@
   }
   .toolbar input[type="text"]:focus { outline: 2px solid var(--ember); }
 
+  .search-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-wrap input[type="text"] { width: 100%; padding-right: 34px; }
+  .search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 5px 7px;
+  }
+  .search-clear:hover { color: var(--ember); }
+
   .chip {
     padding: 7px 14px;
     border-radius: 999px;
@@ -153,6 +170,11 @@
   .card .sub {
     font-size: 13px;
     color: var(--ink-soft);
+  }
+  .card .match-hint {
+    font-size: 12px;
+    color: var(--ember-deep);
+    font-style: italic;
   }
   .card .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
   .card .tags span {
@@ -429,12 +451,16 @@
     <button class="tab-btn" data-tab="seafood">Seafood</button>
     <button class="tab-btn" data-tab="dessert">Desserts</button>
     <button class="tab-btn" data-tab="side">Sides</button>
+    <button class="tab-btn" data-tab="sauce">Sauces</button>
     <button class="tab-btn" data-tab="week">This Week</button>
   </div>
 
   <div id="browseView">
     <div class="toolbar">
-      <input type="text" id="search" placeholder="Search recipes, ingredients, tags&hellip;">
+      <div class="search-wrap">
+        <input type="text" id="search" placeholder="Search recipes, ingredients, tags&hellip;">
+        <button type="button" id="searchClear" class="search-clear" aria-label="Clear search" style="display:none;">&times;</button>
+      </div>
       <button class="btn" id="addBtn">+ Add Recipe</button>
     </div>
 
@@ -502,10 +528,11 @@
       </div>
     </div>
     <div class="form-row">
-      <label>Course &mdash; for the Desserts/Sides tabs (leave unchecked for a main)</label>
+      <label>Course &mdash; for the Desserts/Sides/Sauces tabs (leave unchecked for a main)</label>
       <div class="protein-checks">
         <label><input type="checkbox" id="f_course_dessert" value="dessert"> Dessert</label>
         <label><input type="checkbox" id="f_course_side" value="side"> Side</label>
+        <label><input type="checkbox" id="f_course_sauce" value="sauce"> Sauce</label>
       </div>
     </div>
     <div class="two-col">
@@ -591,6 +618,7 @@
       id: 'salsa-roja',
       collection: 'line',
       proteins: [],
+      courses: ['sauce'],
       title: 'Charred Tomato–Guajillo Salsa Roja',
       category: 'Salsas & Sauces',
       tags: ['gluten-free', 'make-ahead'],
@@ -4796,7 +4824,7 @@
 
   function proteinList(tab) {
     if (tab === 'all' || tab === 'week') return recipes.slice();
-    if (tab === 'dessert' || tab === 'side') return recipes.filter(function (r) { return (r.courses || []).indexOf(tab) !== -1; });
+    if (tab === 'dessert' || tab === 'side' || tab === 'sauce') return recipes.filter(function (r) { return (r.courses || []).indexOf(tab) !== -1; });
     return recipes.filter(function (r) { return (r.proteins || []).indexOf(tab) !== -1; });
   }
 
@@ -4865,11 +4893,32 @@
     return hay.join(' ').toLowerCase().indexOf(term.toLowerCase()) !== -1;
   }
 
-  function cardHtml(r) {
+  // Explains a search match when it isn't obvious from the title alone
+  // (e.g. "chicken" matching a pork recipe because it uses chicken stock).
+  function matchReason(r, term) {
+    if (!term) return null;
+    var t = term.toLowerCase();
+    if (r.title.toLowerCase().indexOf(t) !== -1) return null;
+    if ((r.category || '').toLowerCase().indexOf(t) !== -1) return 'category: ' + r.category;
+    var tagHit = (r.tags || []).filter(function (tag) { return tag.toLowerCase().indexOf(t) !== -1; })[0];
+    if (tagHit) return 'tag: ' + tagHit;
+    var ingredientHit = null;
+    (r.components || []).some(function (c) {
+      return c.items.some(function (it) {
+        if (it.item.toLowerCase().indexOf(t) !== -1) { ingredientHit = it.item; return true; }
+        return false;
+      });
+    });
+    if (ingredientHit) return 'ingredient: ' + ingredientHit;
+    return null;
+  }
+
+  function cardHtml(r, reason) {
     return '<div class="cat">' + escapeHtml(r.category) + '</div>' +
       '<h3>' + escapeHtml(r.title) + '</h3>' +
       '<div class="sub">' + escapeHtml(r.yield || '') + '</div>' +
       '<div class="sub">' + escapeHtml(r.timing || '') + '</div>' +
+      (reason ? '<div class="match-hint">Matched ' + escapeHtml(reason) + '</div>' : '') +
       '<div class="tags">' + (r.tags || []).map(function (t) { return '<span>' + escapeHtml(t) + '</span>'; }).join('') + '</div>';
   }
 
@@ -4882,7 +4931,7 @@
     filtered.forEach(function (r) {
       var card = document.createElement('div');
       card.className = 'card';
-      card.innerHTML = cardHtml(r);
+      card.innerHTML = cardHtml(r, matchReason(r, searchTerm));
       card.addEventListener('click', function () { openDetail(r); });
       grid.appendChild(card);
     });
@@ -4904,7 +4953,7 @@
 
   function weekBucket(key) {
     var list = key === 'other'
-      ? recipes.filter(function (r) { return (!r.proteins || r.proteins.length === 0) && (r.courses || []).indexOf('dessert') === -1; })
+      ? recipes.filter(function (r) { return (!r.proteins || r.proteins.length === 0) && (r.courses || []).indexOf('dessert') === -1 && (r.courses || []).indexOf('sauce') === -1; })
       : recipes.filter(function (r) { return r.proteins && r.proteins.indexOf(key) !== -1; });
     return list.slice().sort(function (a, b) { return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0); });
   }
@@ -4988,7 +5037,7 @@
       '<div class="form-row"><label>Tags (comma separated)</label><input type="text" id="e_tags" value="' + escapeHtml((r.tags || []).join(', ')) + '"></div>' +
       '</div>';
     html += '<div class="form-row"><label>Protein(s) &mdash; comma separated: beef, chicken, pork, seafood (leave blank if none apply)</label><input type="text" id="e_protein" value="' + escapeHtml((r.proteins || []).join(', ')) + '"></div>';
-    html += '<div class="form-row"><label>Course &mdash; comma separated: dessert, side (leave blank if neither)</label><input type="text" id="e_course" value="' + escapeHtml((r.courses || []).join(', ')) + '"></div>';
+    html += '<div class="form-row"><label>Course &mdash; comma separated: dessert, side, sauce (leave blank if none)</label><input type="text" id="e_course" value="' + escapeHtml((r.courses || []).join(', ')) + '"></div>';
     html += '<div class="two-col">' +
       '<div class="form-row"><label>Yield</label><input type="text" id="e_yield" value="' + escapeHtml(r.yield || '') + '"></div>' +
       '<div class="form-row"><label>Timing</label><input type="text" id="e_timing" value="' + escapeHtml(r.timing || '') + '"></div>' +
@@ -5038,7 +5087,7 @@
       r.category = document.getElementById('e_category').value.trim() || r.category;
       r.tags = document.getElementById('e_tags').value.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
       r.proteins = document.getElementById('e_protein').value.split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { return ['beef', 'chicken', 'pork', 'seafood'].indexOf(t) !== -1; });
-      r.courses = document.getElementById('e_course').value.split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { return ['dessert', 'side'].indexOf(t) !== -1; });
+      r.courses = document.getElementById('e_course').value.split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { return ['dessert', 'side', 'sauce'].indexOf(t) !== -1; });
       r.yield = document.getElementById('e_yield').value.trim();
       r.timing = document.getElementById('e_timing').value.trim();
       r.equipment = document.getElementById('e_equipment').value.trim();
@@ -5072,9 +5121,22 @@
   // events aren't reliably fired by every PDF export path, so the fit
   // can't depend on them.
 
-  document.getElementById('search').addEventListener('input', function (e) {
+  var searchInput = document.getElementById('search');
+  var searchClearBtn = document.getElementById('searchClear');
+  function updateSearchClear() {
+    searchClearBtn.style.display = searchInput.value ? 'block' : 'none';
+  }
+  searchInput.addEventListener('input', function (e) {
     searchTerm = e.target.value;
+    updateSearchClear();
     render();
+  });
+  searchClearBtn.addEventListener('click', function () {
+    searchInput.value = '';
+    searchTerm = '';
+    updateSearchClear();
+    render();
+    searchInput.focus();
   });
 
   document.getElementById('shuffleWeekBtn').addEventListener('click', function () {
@@ -5091,6 +5153,16 @@
   document.getElementById('cancelAdd').addEventListener('click', function () { addOverlay.classList.remove('show'); });
   addOverlay.addEventListener('click', function (e) { if (e.target === this) addOverlay.classList.remove('show'); });
 
+  // Escape closes whichever modal is open.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' && e.key !== 'Esc') return;
+    if (addOverlay.classList.contains('show')) {
+      addOverlay.classList.remove('show');
+    } else if (document.getElementById('detailOverlay').classList.contains('show')) {
+      closeDetail();
+    }
+  });
+
   document.getElementById('saveRecipe').addEventListener('click', function () {
     var title = document.getElementById('f_title').value.trim();
     if (!title) { alert('Give the recipe a title first.'); return; }
@@ -5105,7 +5177,7 @@
       var box = document.getElementById('f_protein_' + p);
       return box && box.checked;
     });
-    var courses = ['dessert', 'side'].filter(function (c) {
+    var courses = ['dessert', 'side', 'sauce'].filter(function (c) {
       var box = document.getElementById('f_course_' + c);
       return box && box.checked;
     });
@@ -5137,7 +5209,7 @@
     ['f_title', 'f_tags', 'f_yield', 'f_timing', 'f_ingredients', 'f_method', 'f_notes'].forEach(function (id) {
       document.getElementById(id).value = '';
     });
-    ['f_protein_beef', 'f_protein_chicken', 'f_protein_pork', 'f_protein_seafood', 'f_course_dessert', 'f_course_side'].forEach(function (id) {
+    ['f_protein_beef', 'f_protein_chicken', 'f_protein_pork', 'f_protein_seafood', 'f_course_dessert', 'f_course_side', 'f_course_sauce'].forEach(function (id) {
       document.getElementById(id).checked = false;
     });
     renderAll();
