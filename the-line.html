@@ -416,7 +416,8 @@
     </div>
     <div class="meta">
       Gluten-free &middot; no bell peppers &middot; grams &amp; &deg;F<br>
-      <span id="recipeCount">0</span> recipes on the line
+      <span id="recipeCount">0</span> recipes on the line<br>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdfwg7N6jiFqBHpG7yjeybhX8UpUrOV85lFrE8re6lw8P9iSw/viewform" target="_blank" rel="noopener" style="color:var(--ember-deep);">Suggest a Recipe</a>
     </div>
   </header>
 
@@ -426,6 +427,8 @@
     <button class="tab-btn" data-tab="chicken">Chicken</button>
     <button class="tab-btn" data-tab="pork">Pork</button>
     <button class="tab-btn" data-tab="seafood">Seafood</button>
+    <button class="tab-btn" data-tab="dessert">Desserts</button>
+    <button class="tab-btn" data-tab="side">Sides</button>
     <button class="tab-btn" data-tab="week">This Week</button>
   </div>
 
@@ -434,7 +437,6 @@
       <input type="text" id="search" placeholder="Search recipes, ingredients, tags&hellip;">
       <button class="btn" id="addBtn">+ Add Recipe</button>
     </div>
-    <div class="toolbar" id="filterChips"></div>
 
     <div class="grid" id="grid"></div>
     <div class="empty" id="emptyState" style="display:none;">No recipes match. Try clearing filters.</div>
@@ -497,6 +499,13 @@
         <label><input type="checkbox" id="f_protein_chicken" value="chicken"> Chicken</label>
         <label><input type="checkbox" id="f_protein_pork" value="pork"> Pork</label>
         <label><input type="checkbox" id="f_protein_seafood" value="seafood"> Seafood</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Course &mdash; for the Desserts/Sides tabs (leave unchecked for a main)</label>
+      <div class="protein-checks">
+        <label><input type="checkbox" id="f_course_dessert" value="dessert"> Dessert</label>
+        <label><input type="checkbox" id="f_course_side" value="side"> Side</label>
       </div>
     </div>
     <div class="two-col">
@@ -3301,6 +3310,9 @@
       "beef",
       "pork"
     ],
+    "courses": [
+      "side"
+    ],
     "title": "Smoked Baked Beans",
     "category": "Sides & Rice",
     "tags": [
@@ -3426,6 +3438,7 @@
   {
     "id": "box-fried-rice",
     "proteins": [],
+    "courses": ["side"],
     "title": "Fried Rice",
     "category": "Sides & Rice",
     "tags": [
@@ -3508,6 +3521,7 @@
   {
     "id": "box-japanese-cucumber-salad",
     "proteins": [],
+    "courses": ["side"],
     "title": "Japanese Cucumber Salad (Sunomono)",
     "category": "Sides & Rice",
     "tags": [
@@ -3565,6 +3579,7 @@
   {
     "id": "box-mexican-rice",
     "proteins": [],
+    "courses": ["side"],
     "title": "Mexican Rice",
     "category": "Sides & Rice",
     "tags": [
@@ -3656,6 +3671,7 @@
   {
     "id": "box-mushroom-spinach-garlic-noodles",
     "proteins": [],
+    "courses": ["side"],
     "title": "Mushroom and Spinach Garlic Noodles",
     "category": "Sides & Rice",
     "tags": [
@@ -3752,6 +3768,7 @@
   {
     "id": "box-potato-salad",
     "proteins": [],
+    "courses": ["side"],
     "title": "Family Potato Salad",
     "category": "Sides & Rice",
     "tags": [
@@ -3829,6 +3846,7 @@
   {
     "id": "box-wild-rice",
     "proteins": [],
+    "courses": ["side"],
     "title": "Stovetop Wild Rice",
     "category": "Sides & Rice",
     "tags": [
@@ -3877,6 +3895,7 @@
   {
     "id": "box-carrot-cake",
     "proteins": [],
+    "courses": ["dessert"],
     "title": "Orange Carrot Cake with Cream Cheese Frosting",
     "category": "Baked Goods & Desserts",
     "tags": [
@@ -4028,6 +4047,7 @@
   {
     "id": "box-matcha-olive-oil-cake",
     "proteins": [],
+    "courses": ["dessert"],
     "title": "Gluten-Free Olive Oil Matcha Cake",
     "category": "Baked Goods & Desserts",
     "tags": [
@@ -4124,6 +4144,7 @@
   {
     "id": "box-halloween-chocolate-cookies",
     "proteins": [],
+    "courses": ["dessert"],
     "title": "Halloween Chocolate Cutout Cookies",
     "category": "Baked Goods & Desserts",
     "tags": [
@@ -4207,6 +4228,7 @@
   {
     "id": "box-pumpkin-thumbprints",
     "proteins": [],
+    "courses": ["dessert"],
     "title": "Pumpkin Thumbprint Cookies",
     "category": "Baked Goods & Desserts",
     "tags": [
@@ -4774,13 +4796,8 @@
 
   function proteinList(tab) {
     if (tab === 'all' || tab === 'week') return recipes.slice();
+    if (tab === 'dessert' || tab === 'side') return recipes.filter(function (r) { return (r.courses || []).indexOf(tab) !== -1; });
     return recipes.filter(function (r) { return (r.proteins || []).indexOf(tab) !== -1; });
-  }
-
-  function categoriesIn(list) {
-    var set = {};
-    list.forEach(function (r) { set[r.category] = true; });
-    return Object.keys(set).sort();
   }
 
   function ingredientListHtml(items) {
@@ -4831,30 +4848,14 @@
 
   // ---- Browse state + elements ----
   var activeProteinTab = 'all';
-  var activeCategory = 'All';
   var searchTerm = '';
   var grid = document.getElementById('grid');
   var emptyState = document.getElementById('emptyState');
-  var filterChips = document.getElementById('filterChips');
   var recipeCountEl = document.getElementById('recipeCount');
   var browseView = document.getElementById('browseView');
   var weekView = document.getElementById('weekView');
 
-  function renderChipsInto(el, list, activeVal, onPick) {
-    var cats = ['All'].concat(categoriesIn(list));
-    el.innerHTML = '';
-    cats.forEach(function (c) {
-      var chip = document.createElement('div');
-      chip.className = 'chip' + (c === activeVal ? ' active' : '');
-      chip.textContent = c;
-      chip.addEventListener('click', function () { onPick(c); });
-      el.appendChild(chip);
-    });
-  }
-
-  function matchesFilter(r, activeVal, term) {
-    var catOk = activeVal === 'All' || r.category === activeVal;
-    if (!catOk) return false;
+  function matchesFilter(r, term) {
     if (!term) return true;
     var hay = [r.title, r.category].concat(r.tags || []);
     (r.components || []).forEach(function (c) {
@@ -4874,9 +4875,8 @@
 
   function render() {
     var list = proteinList(activeProteinTab);
-    renderChipsInto(filterChips, list, activeCategory, function (c) { activeCategory = c; render(); });
     recipeCountEl.textContent = recipes.length;
-    var filtered = list.filter(function (r) { return matchesFilter(r, activeCategory, searchTerm); });
+    var filtered = list.filter(function (r) { return matchesFilter(r, searchTerm); });
     grid.innerHTML = '';
     emptyState.style.display = filtered.length ? 'none' : 'block';
     filtered.forEach(function (r) {
@@ -4904,7 +4904,7 @@
 
   function weekBucket(key) {
     var list = key === 'other'
-      ? recipes.filter(function (r) { return !r.proteins || r.proteins.length === 0; })
+      ? recipes.filter(function (r) { return (!r.proteins || r.proteins.length === 0) && (r.courses || []).indexOf('dessert') === -1; })
       : recipes.filter(function (r) { return r.proteins && r.proteins.indexOf(key) !== -1; });
     return list.slice().sort(function (a, b) { return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0); });
   }
@@ -4988,6 +4988,7 @@
       '<div class="form-row"><label>Tags (comma separated)</label><input type="text" id="e_tags" value="' + escapeHtml((r.tags || []).join(', ')) + '"></div>' +
       '</div>';
     html += '<div class="form-row"><label>Protein(s) &mdash; comma separated: beef, chicken, pork, seafood (leave blank if none apply)</label><input type="text" id="e_protein" value="' + escapeHtml((r.proteins || []).join(', ')) + '"></div>';
+    html += '<div class="form-row"><label>Course &mdash; comma separated: dessert, side (leave blank if neither)</label><input type="text" id="e_course" value="' + escapeHtml((r.courses || []).join(', ')) + '"></div>';
     html += '<div class="two-col">' +
       '<div class="form-row"><label>Yield</label><input type="text" id="e_yield" value="' + escapeHtml(r.yield || '') + '"></div>' +
       '<div class="form-row"><label>Timing</label><input type="text" id="e_timing" value="' + escapeHtml(r.timing || '') + '"></div>' +
@@ -5037,6 +5038,7 @@
       r.category = document.getElementById('e_category').value.trim() || r.category;
       r.tags = document.getElementById('e_tags').value.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
       r.proteins = document.getElementById('e_protein').value.split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { return ['beef', 'chicken', 'pork', 'seafood'].indexOf(t) !== -1; });
+      r.courses = document.getElementById('e_course').value.split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(function (t) { return ['dessert', 'side'].indexOf(t) !== -1; });
       r.yield = document.getElementById('e_yield').value.trim();
       r.timing = document.getElementById('e_timing').value.trim();
       r.equipment = document.getElementById('e_equipment').value.trim();
@@ -5103,6 +5105,10 @@
       var box = document.getElementById('f_protein_' + p);
       return box && box.checked;
     });
+    var courses = ['dessert', 'side'].filter(function (c) {
+      var box = document.getElementById('f_course_' + c);
+      return box && box.checked;
+    });
 
     var components = parseIngredients(ingredientsRaw);
     var method = methodRaw.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
@@ -5113,6 +5119,7 @@
       category: category,
       tags: tags,
       proteins: proteins,
+      courses: courses,
       yield: yieldVal,
       timing: timing,
       equipment: '',
@@ -5130,7 +5137,7 @@
     ['f_title', 'f_tags', 'f_yield', 'f_timing', 'f_ingredients', 'f_method', 'f_notes'].forEach(function (id) {
       document.getElementById(id).value = '';
     });
-    ['f_protein_beef', 'f_protein_chicken', 'f_protein_pork', 'f_protein_seafood'].forEach(function (id) {
+    ['f_protein_beef', 'f_protein_chicken', 'f_protein_pork', 'f_protein_seafood', 'f_course_dessert', 'f_course_side'].forEach(function (id) {
       document.getElementById(id).checked = false;
     });
     renderAll();
@@ -5143,7 +5150,6 @@
       document.querySelectorAll('#proteinTabs .tab-btn').forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
       activeProteinTab = btn.getAttribute('data-tab');
-      activeCategory = 'All';
       if (activeProteinTab === 'week') {
         browseView.style.display = 'none';
         weekView.style.display = '';
