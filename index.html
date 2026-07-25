@@ -204,17 +204,22 @@
     position: relative;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
+  .modal-topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 8px;
+    margin: -10px -14px 6px 0;
+  }
   .modal .close {
-    position: absolute;
-    top: max(16px, calc(env(safe-area-inset-top, 0px) + 12px));
-    right: max(20px, calc(env(safe-area-inset-right, 0px) + 16px));
+    position: static;
     background: none;
     border: none;
-    font-size: 22px;
+    font-size: 26px;
+    padding: 6px 10px;
     cursor: pointer;
     color: var(--ink-soft);
     line-height: 1;
-    z-index: 5;
   }
   .modal .close:hover { color: var(--ember); }
   .modal .cat { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--olive); }
@@ -390,7 +395,8 @@
     .toolbar .btn { width: 100%; }
     .grid { grid-template-columns: 1fr; gap: 12px; }
     .overlay { padding: 0; align-items: stretch; }
-    .modal { max-width: 100%; height: 100%; border-radius: 0; padding: max(22px, calc(env(safe-area-inset-top, 0px) + 40px)) 18px 24px; overflow-y: auto; }
+    .modal { max-width: 100%; height: 100%; border-radius: 0; padding: 22px 18px 24px; overflow-y: auto; }
+    .modal-topbar { margin: 0 -4px 10px 0; padding-top: 34px; }
     .modal-actions { flex-wrap: wrap; }
     .modal-actions .btn { flex: 1 1 auto; }
   }
@@ -461,7 +467,7 @@
 <!-- Add Recipe Modal -->
 <div class="overlay" id="addOverlay">
   <div class="modal">
-    <button class="close" id="addClose">&times;</button>
+    <div class="modal-topbar"><button class="close" id="addClose">&times;</button></div>
     <h2 style="margin-top:0;">Add Recipe</h2>
     <div class="form-row">
       <label>Title</label>
@@ -4935,7 +4941,7 @@
 
   // ---- Detail view (shared, view + edit mode) ----
   function viewDetailHtml(r) {
-    var html = '<button class="close" id="detailClose">&times;</button>';
+    var html = '<div class="modal-topbar"><button class="close" id="detailClose">&times;</button></div>';
     html += '<div class="cat">' + escapeHtml(r.category) + '</div>';
     html += '<h2>' + escapeHtml(r.title) + '</h2>';
     html += '<div class="yield-row"><span><b>Yield:</b> ' + escapeHtml(r.yield || '') + '</span><span><b>Timing:</b> ' + escapeHtml(r.timing || '') + '</span></div>';
@@ -4974,7 +4980,7 @@
   }
 
   function editDetailHtml(r) {
-    var html = '<button class="close" id="detailClose">&times;</button>';
+    var html = '<div class="modal-topbar"><button class="close" id="detailClose">&times;</button></div>';
     html += '<h2 style="margin-top:0;">Editing: ' + escapeHtml(r.title) + '</h2>';
     html += '<div class="form-row"><label>Title</label><input type="text" id="e_title" value="' + escapeHtml(r.title) + '"></div>';
     html += '<div class="two-col">' +
