@@ -468,8 +468,8 @@
       <h1>The Line</h1>
     </div>
     <div class="meta">
-      Grams &amp; &deg;F &middot; GF by default (exceptions flagged per recipe)<br>
-      <span id="recipeCount">0</span> recipes on the line<br>
+      Grams &amp; &deg;F &middot; GF by default (exceptions flagged per recipe) &middot; No raw bell pepper<br>
+      <span id="recipeCount">0</span> recipes on the line &middot; <span id="buildStamp" title="Data version currently loaded. If this does not match what you just committed, the deploy has not landed yet.">checking&hellip;</span><br>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSdfwg7N6jiFqBHpG7yjeybhX8UpUrOV85lFrE8re6lw8P9iSw/viewform" target="_blank" rel="noopener" style="color:var(--ember-deep);">Suggest a Recipe</a>
     </div>
   </header>
@@ -619,6 +619,8 @@
   // since your last export -- never the whole collection.
   var PENDING_KEY = 'the-line-pending-v1';
   var baseRecipes = [];   // exactly what's in recipes.json, as fetched
+  var dataVersion = null; // version stamp from recipes.json, shown in the header
+  var dataUpdated = null; // ISO date from recipes.json, shown in the header
   var recipes = [];       // baseRecipes with pending overlay applied, minus deletes
 
   function loadPending() {
@@ -698,9 +700,20 @@
     updateSyncBanner();
   }
 
+  function bumpVersion(v) {
+    // "v12" -> "v13". Unknown/absent -> "v1".
+    var m = /^v(\d+)$/.exec(String(v || ''));
+    return 'v' + (m ? parseInt(m[1], 10) + 1 : 1);
+  }
+
   function exportRecipesJson() {
     var merged = applyPending(baseRecipes, loadPending());
-    var blob = new Blob([JSON.stringify(merged, null, 2) + '\n'], { type: 'application/json' });
+    var payload = {
+      version: bumpVersion(dataVersion),
+      updated: new Date().toISOString().slice(0, 10),
+      recipes: merged
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2) + '\n'], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
@@ -935,6 +948,14 @@
   function render() {
     var list = proteinList(activeProteinTab);
     recipeCountEl.textContent = recipes.length;
+    var stampEl = document.getElementById('buildStamp');
+    if (stampEl) {
+      if (dataVersion) {
+        stampEl.textContent = 'data ' + dataVersion + (dataUpdated ? ' (' + dataUpdated + ')' : '');
+      } else {
+        stampEl.textContent = 'data unversioned';
+      }
+    }
     var filtered = list.filter(function (r) { return matchesFilter(r, searchTerm); });
     grid.innerHTML = '';
     emptyState.style.display = filtered.length ? 'none' : 'block';
@@ -1264,7 +1285,16 @@
         return res.json();
       })
       .then(function (data) {
-        baseRecipes = data;
+        // Accept either a bare array (legacy) or {version, updated, recipes:[...]}
+        if (Array.isArray(data)) {
+          baseRecipes = data;
+          dataVersion = null;
+          dataUpdated = null;
+        } else {
+          baseRecipes = data.recipes || [];
+          dataVersion = data.version || null;
+          dataUpdated = data.updated || null;
+        }
         var pending = reconcile(baseRecipes, loadPending());
         savePending(pending);
         recipes = applyPending(baseRecipes, pending);

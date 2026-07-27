@@ -2,7 +2,7 @@
 // and works offline once it's been loaded at least once.
 // Place this file (sw.js) in the SAME folder as index.html when you host it.
 
-const CACHE_NAME = 'the-line-v8';
+const CACHE_NAME = 'the-line-v9';
 const APP_SHELL = [
   './',
   './index.html',
