@@ -1,6 +1,6 @@
 {
-  "version": "v9",
-  "updated": "2026-07-26",
+  "version": "v13",
+  "updated": "2026-08-06",
   "note": "Bump `version` in this file every time it is committed. The site header shows it, so you can confirm a deploy landed at a glance.",
   "recipes": [
     {
@@ -4725,7 +4725,7 @@
         "quick",
         "herb-forward"
       ],
-      "yield": "About 1200g, 4 generous servings",
+      "yield": "About 1250g, 4 generous servings",
       "timing": "35 min active / 35 min total",
       "equipment": "Wide skillet, spice grinder or food processor",
       "courses": [],
@@ -4736,7 +4736,7 @@
             {
               "item": "Raw glutinous rice",
               "g": "40g",
-              "note": "uncooked Thai sticky rice"
+              "note": "uncooked Thai sticky rice, makes about double what you need here"
             },
             {
               "item": "Lemongrass",
@@ -4754,13 +4754,17 @@
           "name": "Meat",
           "items": [
             {
-              "item": "Ground chicken",
+              "item": "Ground turkey or chicken",
               "g": "900g",
-              "note": "dark meat, 15 to 20 percent fat"
+              "note": "standard supermarket 93 percent lean"
             },
             {
-              "item": "Water or chicken stock",
-              "g": "80g"
+              "item": "Neutral oil",
+              "g": "40g"
+            },
+            {
+              "item": "Chicken stock",
+              "g": "150g"
             }
           ]
         },
@@ -4779,7 +4783,7 @@
             {
               "item": "Toasted rice powder",
               "g": "20g",
-              "note": "from above"
+              "note": "10g in the dressing, 10g at the finish"
             },
             {
               "item": "Thai chili flakes (prik bon)",
@@ -4845,19 +4849,21 @@
       "prep": [],
       "method": [
         "Toast 40g raw glutinous rice in a dry pan over medium-low with 10g bruised lemongrass and 2g makrut lime leaf, shaking often, 8 to 12 minutes, until the grains are deep golden brown and smell like popcorn.",
-        "Cool completely, discard the lemongrass and lime leaf, and grind to a coarse sand. You want 20g for this batch.",
-        "Bring 80g water to a simmer in a wide pan over medium heat. Add 900g ground chicken and break it apart continuously, 6 to 8 minutes, until no pink remains and it reads 165°F internal. Keep it in loose crumbles.",
-        "Take the pan off the heat and rest 3 to 4 minutes, until the meat is warm rather than hot.",
-        "Add 60g fish sauce, 75g lime juice, 5g sugar, 5g chili flakes, and 20g toasted rice powder to the warm meat. Fold until evenly coated.",
+        "Cool completely, discard the lemongrass and lime leaf, and grind to a coarse sand. You need roughly 20g for this batch. Store the rest.",
+        "Warm 40g neutral oil in a saucepan or 3-quart pot over medium heat, 30 seconds. Add 150g chicken stock and bring to a simmer.",
+        "Add 900g ground turkey or chicken and break it apart into the liquid. Cover and cook over medium-low 5 to 6 minutes, stirring twice, until no pink remains and it reads 165°F internal. Pull off the heat at 165°F.",
+        "Rest off the heat, uncovered, 3 to 4 minutes. There should be 80 to 100g of liquid pooling when you tilt the pot. Never drain.",
+        "Add 60g fish sauce, 75g lime juice, 5g sugar, 5g chili flakes, and 10g toasted rice powder. Fold until evenly coated and glossy.",
         "Fold in 90g shallots and 45g scallions.",
         "Cool 5 minutes to just above room temperature, then fold in 25g mint, 20g cilantro, and 10g culantro.",
+        "Fold in the remaining 10g toasted rice powder just before serving.",
         "Taste and adjust: 15g lime if flat, 10g fish sauce if it needs salt and depth, 2g chili at a time for heat.",
         "Serve with 600g sticky rice, 200g cabbage wedges, and 150g cucumber spears."
       ],
       "finalSeasoning": "Fish sauce and lime should land close to equal by weight, with lime slightly ahead. Adjust lime first, then fish sauce, then chili.",
-      "chefNote": "Glutinous rice contains no gluten; the name refers to texture. The rice powder is what makes larb larb, adding nuttiness and body that soaks up the dressing, so grind it coarse rather than fine. Poaching the chicken in a little water instead of frying keeps the crumbles tender and stops the dressing breaking. Dress while the meat is warm so it absorbs, but cool it before the herbs go in or they blacken. Swap the chicken for ground pork for larb moo, no other changes.",
+      "chefNote": "Glutinous rice contains no gluten; the name refers to texture. Toasting rice powder is slow, so 40g of raw rice deliberately makes about double what one batch needs; the surplus keeps 2 to 3 months in a sealed jar. Grind it coarse. Rice powder is a sponge, so half goes in with the dressing and half at the finish, which keeps both the moisture and the nutty crunch. Standard 93 percent lean poultry carries almost no fat, so the 40g oil and 150g stock are structural, not optional. Use a saucepan rather than a wide skillet; less surface area means less evaporation. Pull at 165°F and stop, since lean poultry dries fast past that. If using 99 percent lean, add another 30g stock at step 5. The pooled liquid is part of the dressing, so never drain. Turkey runs leaner than chicken and takes an extra 10g fish sauce.",
       "servingNotes": "Eaten by hand, scooping with sticky rice and raw cabbage.",
-      "storage": "Refrigerate up to 3 days, though the herbs dull after day one. For freezer portions, cook and cool the plain chicken crumbles, freeze up to 2 months, then thaw and dress fresh with new herbs."
+      "storage": "Refrigerate up to 3 days, though the herbs dull after day one. It tightens in the fridge; loosen leftovers with 15g stock or lime juice. For freezer portions, cook and cool the plain crumbles, freeze up to 2 months, then thaw and dress fresh with new herbs."
     },
     {
       "id": "sriracha-lime-crema",
@@ -5197,6 +5203,115 @@
       "chefNote": "The ribs carry most of the capsaicin, so scraping them is what makes this mild; seeding alone leaves the heat behind. Less stock than the verde because the tomatoes carry more body and this should coat, not run. Boiled salsas lose acid that charred ones keep, hence the vinegar correction. To raise the heat later, stir in a spoonful of the tomatillo verde. Distinct from the Charred Tomato-Guajillo Salsa Roja, which is smoky and dried-chile driven.",
       "servingNotes": "Table salsa, mild enough to pour over anything.",
       "storage": "Refrigerate up to 5 days. Freezes 3 months in 250g portions."
+    },
+    {
+      "id": "cottage-cheese-waffles",
+      "source": "line",
+      "title": "Savory Cottage Cheese Waffles with Broccoli",
+      "category": "Other",
+      "tags": [
+        "gluten-free",
+        "high-protein",
+        "freezer-friendly",
+        "breakfast",
+        "low-carb"
+      ],
+      "proteins": [],
+      "courses": [],
+      "yield": "About 10 mini waffles, 4 servings",
+      "timing": "15 min active / 25 min total",
+      "equipment": "Mini waffle iron, blender or immersion blender, wire rack",
+      "components": [
+        {
+          "name": "Batter",
+          "items": [
+            {
+              "item": "Cottage cheese",
+              "g": "225g",
+              "note": "full-fat or 2 percent, any curd size"
+            },
+            {
+              "item": "Eggs",
+              "g": "150g",
+              "note": "3 large"
+            },
+            {
+              "item": "Almond flour",
+              "g": "60g",
+              "note": "blanched, fine"
+            },
+            {
+              "item": "Parmesan",
+              "g": "50g",
+              "note": "shredded"
+            },
+            {
+              "item": "Cheddar",
+              "g": "40g",
+              "note": "shredded"
+            },
+            {
+              "item": "Garlic powder",
+              "g": "3g"
+            },
+            {
+              "item": "Onion powder",
+              "g": "3g"
+            },
+            {
+              "item": "Everything bagel seasoning",
+              "g": "5g",
+              "note": "for the batter"
+            },
+            {
+              "item": "Kosher salt",
+              "g": "2g"
+            }
+          ]
+        },
+        {
+          "name": "Add-in",
+          "items": [
+            {
+              "item": "Cooked broccoli",
+              "g": "120g",
+              "note": "leftover, finely chopped and squeezed dry"
+            }
+          ]
+        },
+        {
+          "name": "Finish",
+          "items": [
+            {
+              "item": "Neutral oil",
+              "g": "10g",
+              "note": "for the waffle plates"
+            },
+            {
+              "item": "Everything bagel seasoning",
+              "g": "3g",
+              "note": "for the tops"
+            }
+          ]
+        }
+      ],
+      "prep": [],
+      "method": [
+        "Chop 120g cooked broccoli into pieces no larger than 5mm. Wrap in a clean towel and squeeze hard until no more water comes out.",
+        "Blend 225g cottage cheese and 150g eggs 20 to 30 seconds, until completely smooth with no visible curd.",
+        "Whisk in 60g almond flour, 50g parmesan, 3g garlic powder, 3g onion powder, 5g everything bagel seasoning, and 2g kosher salt until no dry pockets remain.",
+        "Rest the batter 5 minutes. It will thicken to the consistency of loose pancake batter.",
+        "Fold in the squeezed 120g broccoli and 40g cheddar.",
+        "Preheat the mini waffle iron a full 5 minutes, until the indicator cycles. Brush both plates with 10g neutral oil.",
+        "Add about 55g batter per waffle, spreading to the edges. Close and cook 4 to 5 minutes, until the steam slows to a wisp and the waffle is deep golden brown.",
+        "Move to a wire rack, not a plate, and rest 2 minutes.",
+        "Repeat with the remaining batter, re-oiling the plates every other waffle.",
+        "Finish with 3g everything bagel seasoning across the tops."
+      ],
+      "finalSeasoning": "Everything bagel seasoning is salty, so 2g kosher salt in the batter is the ceiling. Salt the tops with seasoning, not more salt.",
+      "chefNote": "Blending the cottage cheese smooth is what turns it into structure instead of wet pockets that steam the waffle from the inside. Almond flour has no gluten, so the eggs and melted cheese do all the binding, which is why the batter needs the 5 minute rest to hydrate before it will hold a shape. Wet broccoli is the main failure point; squeeze it harder than feels necessary. Do not open the iron before 4 minutes, since a cheese batter needs the full time to set and will tear. Cooling on a rack rather than a plate keeps the underside crisp.",
+      "servingNotes": "Good with a fried egg, sour cream, or the sriracha-lime crema.",
+      "storage": "Refrigerate up to 4 days, freeze up to 2 months in a single layer. Reheat straight from frozen in a toaster or a 375°F oven for 5 minutes; the microwave turns them limp."
     }
   ]
 }
